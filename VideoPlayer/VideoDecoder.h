@@ -17,4 +17,8 @@ private:
 
 private:
 	YUVDisplayPanel *display = NULL;
+
+	double prevDelay = 0.0;
+	double prevPTS = 0.0;
+	double frameTimer = 0.0;
 };

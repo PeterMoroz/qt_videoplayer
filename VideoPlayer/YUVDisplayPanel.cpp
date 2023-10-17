@@ -1,6 +1,6 @@
 #include "YUVDisplayPanel.h"
 
-#include <QtCore/QTimer>
+// #include <QtCore/QTimer>
 
 #define STRINGIFY(x) #x
 
@@ -89,7 +89,7 @@ void YUVDisplayPanel::Init(int w, int h)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width / 2, height / 2, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 }
 
-void YUVDisplayPanel::DrawFrame(AVFrame *frame)
+void YUVDisplayPanel::DrawFrame(AVFrame *frame, int delay)
 {
 	if (width == frame->linesize[0])
 	{
@@ -109,6 +109,10 @@ void YUVDisplayPanel::DrawFrame(AVFrame *frame)
 			memcpy(pixeldata[2] + (width / 2) * i, frame->data[2] + frame->linesize[2] * i, width / 2);
 		}
 	}
+
+	// update();
+	// QTimer::singleShot(delay, this, SLOT(update()));
+	// QTimer::singleShot(40, this, SLOT(update()));
 }
 
 void YUVDisplayPanel::initializeGL()
