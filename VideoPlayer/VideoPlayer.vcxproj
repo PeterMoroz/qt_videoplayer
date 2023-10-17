@@ -101,6 +101,7 @@
     <ClCompile Include="AudioResampler.cpp" />
     <ClCompile Include="Decoder.cpp" />
     <ClCompile Include="Demuxer.cpp" />
+    <ClCompile Include="ReferenceClock.cpp" />
     <ClCompile Include="YUVDisplayPanel.cpp" />
     <ClCompile Include="VideoDecoder.cpp" />
     <ClCompile Include="VideoPlayer.cpp" />
@@ -117,6 +118,8 @@
     <QtMoc Include="YUVDisplayPanel.h" />
     <ClInclude Include="AudioPlaybackDevice.h" />
     <ClInclude Include="AudioResampler.h" />
+    <ClInclude Include="ClockSource.h" />
+    <ClInclude Include="ReferenceClock.h" />
     <ClInclude Include="VideoDecoder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

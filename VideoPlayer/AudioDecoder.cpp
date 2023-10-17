@@ -54,6 +54,10 @@ void AudioDecoder::processFrame(AVFrame *frame)
 				int remainBytes = samplesByteSize - written;
 				std::memcpy(samplesBuffer, samplesBuffer + written, remainBytes);
 				samplesByteSize -= written;
+
+				static const int Divisor = SampleRate * ChannelsNum * 2;	// each sample is 16-bit or 2 bytes wide
+				clock -= static_cast<double>(written) / static_cast<double>(Divisor);
+
 				if (samplesByteSize == 0)
 				{
 					return;

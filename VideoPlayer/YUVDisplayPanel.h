@@ -4,6 +4,7 @@
 #include <QtGui/QOpenGLFunctions>
 #include <QtOpenGL/QGLShaderProgram>
 
+#include <QtCore/QTimer>
 
 extern "C"
 {
@@ -20,7 +21,7 @@ public:
 	virtual ~YUVDisplayPanel() = default;
 
 	void Init(int w, int h);
-	void DrawFrame(AVFrame *frame);
+	void DrawFrame(AVFrame *frame, int delay);
 
 protected:
 	void initializeGL() override;
@@ -36,4 +37,5 @@ private:
 	GLuint textures[3] = { 0 };
 
 	unsigned char* pixeldata[3] = { nullptr };
+	QTimer *updateTimer = Q_NULLPTR;
 };
