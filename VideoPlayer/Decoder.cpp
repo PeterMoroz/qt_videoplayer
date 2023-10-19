@@ -46,6 +46,7 @@ Decoder::Decoder(const AVCodecParameters *params, const int maxAvailBytes)
 	}
 
 	qDebug() << QString::fromLocal8Bit("codec: ") << QString::fromLocal8Bit(codec->name);
+	qDebug() << QString::fromLocal8Bit("timebase: ") << av_q2d(codecContext->time_base);
 }
 
 Decoder::~Decoder()
@@ -65,14 +66,6 @@ void Decoder::enquePacket(const AVPacket &packet)
 	packets.push_back(packet);
 	packetsSizeBytes += packet.size;
 	packetsWait.wakeOne();
-	//QMutexLocker lock(&packetsMutex);
-	//AVPacket pkt;
-	//av_init_packet(&pkt);
-	//pkt.data = NULL;
-	//pkt.size = 0;
-	//av_packet_ref(&pkt, &packet);
-	//packets.push_back(pkt);
-	//packetsWait.wakeOne();
 }
 
 void Decoder::setNeedStop()
@@ -127,15 +120,23 @@ void Decoder::process()
 			emit error(QString::fromLocal8Bit("Decoder - could not send packet."));
 			continue;
 		}
+
+		qDebug() << "Decoder - codec name: " << avcodec_get_name(codecContext->codec_id)
+			<< ", packet PTS: " << packet.pts << ", packet time: " << av_q2d(codecContext->time_base) * packet.pts;
+
 		av_free_packet(&packet);
 
 		//unsigned rcvFrameCount = 0;
 		while (rc >= 0)
 		{
 			rc = avcodec_receive_frame(codecContext, frame);
-			if (rc == AVERROR(EAGAIN) || rc == AVERROR_EOF)
+			//if (rc == AVERROR(EAGAIN) || rc == AVERROR_EOF)
+			//	break;
+			if (rc == AVERROR(EAGAIN))
+				continue;
+			if (rc == AVERROR_EOF)
 				break;
-			else if (rc < 0)
+			if (rc < 0)
 			{
 				char errbuffer[AV_ERROR_MAX_STRING_SIZE] = { 0 };
 				qDebug() << QString::fromLocal8Bit("Failure of avcodec_receive_frame : ")
@@ -143,14 +144,18 @@ void Decoder::process()
 				emit error(QString::fromLocal8Bit("Decoder - could not receive frame."));
 				break;
 			}
+
 			// rcvFrameCount++;
-			// qDebug() << "Decoder - frame PTS: " << frame->pts;
+			qDebug() << "Decoder - codec name: " << avcodec_get_name(codecContext->codec_id)
+				<< ", frame PTS: " << frame->pts << ", frame time: " << av_q2d(codecContext->time_base) * frame->pts;
 			processFrame(frame);
 		}
 		// qDebug() << QString::fromLocal8Bit("the frame count received from decoder: ") << rcvFrameCount;
 	}
 
 	av_frame_free(&frame);
+
+	qDebug() << "Decoder - codec name: " << avcodec_get_name(codecContext->codec_id) << " finished.";
 
 	emit finished();
 }

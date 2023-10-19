@@ -26,6 +26,8 @@ public:
 
 	void setNeedStop();
 
+	double getClock() const { return clock; }
+
 private:
 	bool dequePacket(AVPacket &packet);
 
@@ -49,4 +51,7 @@ private:
 	QMutex packetsMutex;
 	QWaitCondition packetsWait;
 	int packetsSizeBytes = 0;
+
+protected:
+	double clock = 0;
 };

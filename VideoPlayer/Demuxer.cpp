@@ -8,15 +8,6 @@
 #include "Decoder.h"
 
 
-namespace
-{
-	double avRationalToDouble(const AVRational& r)
-	{
-		return r.den == 0.0 ? 0.0 : (static_cast<double>(r.num) / static_cast<double>(r.den));
-	}
-}
-
-
 Demuxer::Demuxer(const QString& fname)
 {
 	int rc = avformat_open_input(&formatContext, fname.toLocal8Bit(), NULL, NULL);
@@ -46,7 +37,7 @@ Demuxer::Demuxer(const QString& fname)
 	qDebug() << QString::fromLocal8Bit("index: ") << videoStreamIndex;
 	qDebug() << QString::fromLocal8Bit("width: ") << videoStream->codecpar->width;
 	qDebug() << QString::fromLocal8Bit("height: ") << videoStream->codecpar->height;
-	qDebug() << QString::fromLocal8Bit("FPS: ") << avRationalToDouble(videoStream->avg_frame_rate);
+	qDebug() << QString::fromLocal8Bit("FPS: ") << av_q2d(videoStream->avg_frame_rate);
 	qDebug() << QString::fromLocal8Bit("format: ") << videoStream->codecpar->format;
 
 	audioStreamIndex = av_find_best_stream(formatContext, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
@@ -117,9 +108,6 @@ void Demuxer::process()
 			av_packet_unref(&packet);
 			continue;
 		}
-
-		//packet.pts = packet.pts * 1000 * avRationalToDouble(formatContext->streams[packet.stream_index]->time_base);
-		//packet.dts = packet.dts * 1000 * avRationalToDouble(formatContext->streams[packet.stream_index]->time_base);
 
 		if (packet.stream_index == videoStreamIndex && videoDecoder)
 		{
