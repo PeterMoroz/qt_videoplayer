@@ -45,9 +45,6 @@ const char *fragmentShaderCode = STRINGIFY(
 YUVDisplayPanel::YUVDisplayPanel(QWidget *parent /*= nullptr*/)
 	: QOpenGLWidget(parent)
 {
-	QTimer *timer = new QTimer(this);
-	QObject::connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-	timer->start(40);
 }
 
 void YUVDisplayPanel::Init(int w, int h)
@@ -111,8 +108,6 @@ void YUVDisplayPanel::DrawFrame(AVFrame *frame)
 	}
 
 	// update();
-	// QTimer::singleShot(delay, this, SLOT(update()));
-	// QTimer::singleShot(40, this, SLOT(update()));
 }
 
 void YUVDisplayPanel::initializeGL()
@@ -190,4 +185,9 @@ void YUVDisplayPanel::paintGL()
 	glUniform1i(uniformLocations[2], 2);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+void YUVDisplayPanel::scheduleUpdate(int delay)
+{
+	QTimer::singleShot(delay, this, SLOT(update()));
 }

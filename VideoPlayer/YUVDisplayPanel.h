@@ -26,6 +26,10 @@ protected:
 	// void resizeGL(int w, int h) override;
 	void paintGL() override;
 
+public slots:
+	void scheduleUpdate(int delay);
+
+
 private:
 	int width = 0;
 	int height = 0;
